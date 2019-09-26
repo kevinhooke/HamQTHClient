@@ -1,5 +1,6 @@
 package kh.hamqthclient.xml;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -59,6 +60,7 @@ public class Search {
 		
 	}
 
+	@XmlElement(name="callsign", namespace="http://www.hamqth.com")
 	public String getCallsign() {
 		return callsign;
 	}
@@ -67,6 +69,7 @@ public class Search {
 		this.callsign = callsign;
 	}
 
+	@XmlElement(name="nick", namespace="http://www.hamqth.com")
 	public String getNick() {
 		return nick;
 	}
@@ -75,6 +78,7 @@ public class Search {
 		this.nick = nick;
 	}
 
+	@XmlElement(name="qth", namespace="http://www.hamqth.com")
 	public String getQth() {
 		return qth;
 	}
@@ -83,6 +87,7 @@ public class Search {
 		this.qth = qth;
 	}
 
+	@XmlElement(name="grid", namespace="http://www.hamqth.com")
 	public String getGrid() {
 		return grid;
 	}
@@ -91,6 +96,7 @@ public class Search {
 		this.grid = grid;
 	}
 
+	@XmlElement(name="latitude", namespace="http://www.hamqth.com")
 	public String getLatitude() {
 		return latitude;
 	}
@@ -99,6 +105,7 @@ public class Search {
 		this.latitude = latitude;
 	}
 
+	@XmlElement(name="longitude", namespace="http://www.hamqth.com")
 	public String getLongitude() {
 		return longitude;
 	}

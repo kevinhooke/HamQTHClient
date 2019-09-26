@@ -13,10 +13,7 @@ import javax.ws.rs.core.MediaType;
 import kh.hamqthclient.xml.HamQTHLogonJaxb;
 import kh.hamqthclient.xml.HamQTHMessageBodyReader;
 import kh.hamqthclient.xml.HamQTHSearch;
-import kh.hamqthclient.xml.Search;
-import kh.hamqthclient.xml.Session;
-
-import com.thoughtworks.xstream.XStream;
+import kh.hamqthclient.xml.HamQTHSearchMessageBodyReader;
 
 public class HamQTHClient {
 
@@ -25,16 +22,23 @@ public class HamQTHClient {
 	private WebTarget target;
 	private Properties properties = new Properties();
 
-	private void createClient()
+	private void createLogonClient()
 	{
 		Client client = ClientBuilder.newBuilder().register(HamQTHMessageBodyReader.class).build();
 		WebTarget target = client.target("http://www.hamqth.com").path("xml.php");
 		this.target = target;
 	}
-	
+
+	private void createSearchClient()
+	{
+		Client client = ClientBuilder.newBuilder().register(HamQTHSearchMessageBodyReader.class).build();
+		WebTarget target = client.target("http://www.hamqth.com").path("xml.php");
+		this.target = target;
+	}
+
 	public HamQTHSearch logon()
 	{
-		this.createClient();
+		this.createLogonClient();
 		HamQTHSearch logonSession = null;
 		InputStream is = this.getClass().getClassLoader().getResourceAsStream("hamqthclient.properties");
 		try
@@ -68,13 +72,18 @@ public class HamQTHClient {
 	}
 
 	public HamQTHSearch lookupCallsign(String string) {
-		HamQTHSearch searchResponse = this.target.queryParam("id", this.sessionId)
-		.queryParam("callsign", string)
-		.queryParam("prg", PROGRAM_NAME)
-		.request(MediaType.TEXT_HTML)
-		.get(HamQTHSearch.class);
-		
-		return searchResponse;
+		this.createSearchClient();
+		Invocation.Builder requestBuilder = this.target.queryParam("id", this.sessionId)
+				.queryParam("callsign", string)
+				.queryParam("prg", PROGRAM_NAME)
+				.request(MediaType.TEXT_HTML);
+
+		//debug - return xml as a String
+//		String resultXml = requestBuilder.get(String.class);
+//		System.out.println(resultXml);
+
+		HamQTHSearch result = requestBuilder.get(HamQTHSearch.class);
+		return result;
 	}
 	
 }
