@@ -71,19 +71,40 @@ public class HamQTHClient {
 		return logonSession;
 	}
 
-	public HamQTHSearch lookupCallsign(String string) {
+	public HamQTHSearch lookupCallsign(String callsign) {
 		this.createSearchClient();
-		Invocation.Builder requestBuilder = this.target.queryParam("id", this.sessionId)
-				.queryParam("callsign", string)
-				.queryParam("prg", PROGRAM_NAME)
-				.request(MediaType.TEXT_HTML);
+		Invocation.Builder requestBuilder = buildGetRequest(callsign);
 
 		//debug - return xml as a String
 //		String resultXml = requestBuilder.get(String.class);
 //		System.out.println(resultXml);
 
 		HamQTHSearch result = requestBuilder.get(HamQTHSearch.class);
+		
+		//check for empty result, logon has timed out
+		if(result.getSearch() == null) {
+			System.out.println("WARN: HamQTHClient empty result, logon timed out?");
+			//refresh logon call and retry 1 time
+			this.logon();
+			//rebuild request
+			requestBuilder = buildGetRequest(callsign);
+			result = requestBuilder.get(HamQTHSearch.class);
+			if(result.getSearch() == null){
+				System.out.println("ERROR: HamQTHClient result still null after logon refresh");
+			}
+			else {
+				System.out.println("INFO: logon refreshed, search result returned ok");
+			}
+		}
 		return result;
+	}
+
+	private Invocation.Builder buildGetRequest(String string) {
+		Invocation.Builder requestBuilder = this.target.queryParam("id", this.sessionId)
+				.queryParam("callsign", string)
+				.queryParam("prg", PROGRAM_NAME)
+				.request(MediaType.TEXT_HTML);
+		return requestBuilder;
 	}
 	
 }

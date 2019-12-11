@@ -27,11 +27,21 @@ public class HamQTHTest {
 		System.out.println(search);
 	}
 
+	//TODO: does this test actually check we get an error response?
 	@Test
 	public void testBadCallsignLookup() {
 		hamQTHClient.logon();
 		HamQTHSearch search = hamQTHClient.lookupCallsign("test1");
 		assertNotNull(search);
+		System.out.println(search);
+	}
+	
+	@Test
+	public void testWithoutLogon() {
+		HamQTHClient hamQTHClient2 = new HamQTHClient();
+		HamQTHSearch search = hamQTHClient2.lookupCallsign("kk6dct");
+		assertNotNull(search); //always returns a value
+		assertNotNull(search.getSearch()); //getSearch() is null if there was an error
 		System.out.println(search);
 	}
 
